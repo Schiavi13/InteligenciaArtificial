@@ -24,11 +24,6 @@ class Juego:
         self.comidas = pygame.sprite.Group()
         self.cabezas = pygame.sprite.Group()
         self.colas = pygame.sprite.Group()
-    def dibujarCuadricula(self):
-        for x in range (0,ANCHO,CASILLA):
-            pygame.draw.line(self.pantalla,BLANCO,(x,0),(x,ANCHO))
-        for x in range (0,ALTO,CASILLA):
-            pygame.draw.line(self.pantalla,BLANCO,(0,x),(ANCHO,x))
     def eventos(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -55,16 +50,13 @@ class Juego:
         for i in range(len(self.snake)-1,0,-1):
             self.snake[i].rect.x = self.snake[i-1].rect.x
             self.snake[i].rect.y = self.snake[i-1].rect.y
-
     def generarCabeza(self):
         cabeza = Cabeza(self)
         self.snake.append(cabeza)
         self.cabezas.add(cabeza)
         self.hay_cabeza = True
-    def generarComida(self):
-        
+    def generarComida(self):       
         comida = Comida(self,random.randint(0,(ANCHO/CASILLA)-1),random.randint(0,(ALTO/CASILLA)-1))
-        #comida = Comida(self,0,0)
         self.comidas.add(comida)
         self.cantidad_comida=1
     def update(self):
@@ -72,14 +64,10 @@ class Juego:
             self.generarCabeza()
         if self.cantidad_comida == 0:
             self.generarComida()
-        #self.posCola()
         self.cabezas.update()
         self.colas.update()
-        #self.posCola()
-    def dibujar(self):
-        
+    def dibujar(self):       
         self.pantalla.fill(NEGRO)
-        #self.dibujarCuadricula()
         self.cabezas.draw(self.pantalla)
         self.comidas.draw(self.pantalla)
         self.colas.draw(self.pantalla)
@@ -105,18 +93,8 @@ class Cola(pygame.sprite.Sprite):
         self.image = pygame.Surface([CASILLA,CASILLA])
         self.image.fill(AZUL)
         self.rect = self.image.get_rect()
-        #self.rect.x = xprex
-        #self.rect.y = yprey
-        #self.anterior = anterior
     def update(self):
         pass
-        #self.prex =
-        """
-        self.preposx=self.rect.x
-        self.preposy=self.rect.y
-        self.rect.x = self.anterior.preposx
-        self.rect.y = self.anterior.preposy
-        """
 
 class Cabeza(pygame.sprite.Sprite):
     def __init__(self,juego):
@@ -132,8 +110,6 @@ class Cabeza(pygame.sprite.Sprite):
         self.dir = -1
         self.x = self.rect.x
         self.y = self.rect.y
-        self.preposx = 0
-        self.preposy = 0
     def moverArriba(self):
         if self.dir == 8:
             self.dir = 2
@@ -182,23 +158,14 @@ class Cabeza(pygame.sprite.Sprite):
         self.colisionComida()
         self.juego.posCola()
         if ((self.dir == 6)and(self.rect.x<(ANCHO-CASILLA))):
-            self.preposx = self.rect.x
-            self.preposy = self.rect.y
             self.rect.x += self.vel_x
         elif ((self.dir == 4)and(self.rect.x>0)):
-            self.preposx = self.rect.x
-            self.preposy = self.rect.y
             self.rect.x -= self.vel_x
         elif ((self.dir == 8)and(self.rect.y<ALTO-CASILLA)):
-            self.preposx = self.rect.x
-            self.preposy = self.rect.y
             self.rect.y += self.vel_y
         elif ((self.dir == 2)and(self.rect.y>0)):
-            self.preposx = self.rect.x
-            self.preposy = self.rect.y
             self.rect.y -= self.vel_y
         self.colisionCuerpo()
-        #self.colisionComida()
         if self.dir == 2:
             self.y-=CASILLA
             if self.y<0:

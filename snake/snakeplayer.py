@@ -20,6 +20,7 @@ class Juego:
         self.cantidad_comida = 0
         self.hay_cabeza=False
         self.snake = []
+        self.ocupada = True
     def nuevo(self):
         self.comidas = pygame.sprite.Group()
         self.cabezas = pygame.sprite.Group()
@@ -55,8 +56,17 @@ class Juego:
         self.snake.append(cabeza)
         self.cabezas.add(cabeza)
         self.hay_cabeza = True
-    def generarComida(self):       
+    def generarComida(self):
+        while self.ocupada:
+            x = random.randint(0,(ANCHO/CASILLA)-1)
+            y = random.randint(0,(ALTO/CASILLA)-1)
+            for item in self.snake:
+                if (x == item.rect.x) and (y == item.rect.y):
+                    self.ocupada = True
+                    continue
+            self.ocupada = False
         comida = Comida(self,random.randint(0,(ANCHO/CASILLA)-1),random.randint(0,(ALTO/CASILLA)-1))
+        self.ocupada = True
         self.comidas.add(comida)
         self.cantidad_comida=1
     def update(self):
@@ -147,7 +157,6 @@ class Cabeza(pygame.sprite.Sprite):
     def colisionComida(self):
         for item in self.juego.comidas:
             if pygame.sprite.collide_rect(self,item):
-                print "colision comida"
                 item.kill()
                 del item
                 self.juego.cantidad_comida = 0

@@ -205,13 +205,8 @@ if __name__ == "__main__":
     juego = Juego()
     reloj = pygame.time.Clock()
     juego.nuevo()
-    #comida = Comida(juego,0,0)
-    #juego.comidas.add(comida)
-    #juego.comidas.draw(juego.pantalla)
     while juego.jugando:
-        #juego.nuevo()
         juego.update()
-        #juego.comidas.draw(juego.pantalla)
         juego.dibujar()
         juego.eventos()
         reloj.tick(20)

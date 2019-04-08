@@ -51,6 +51,11 @@ class Juego:
                     for elemento in self.cabezas:
                         if elemento.dir != 4:
                             elemento.moverDerecha()
+    def posCola(self):
+        for i in range(len(self.snake)-1,0,-1):
+            self.snake[i].rect.x = self.snake[i-1].rect.x
+            self.snake[i].rect.y = self.snake[i-1].rect.y
+
     def generarCabeza(self):
         cabeza = Cabeza(self)
         self.snake.append(cabeza)
@@ -67,12 +72,14 @@ class Juego:
             self.generarCabeza()
         if self.cantidad_comida == 0:
             self.generarComida()
+        #self.posCola()
         self.cabezas.update()
         self.colas.update()
+        #self.posCola()
     def dibujar(self):
         
         self.pantalla.fill(NEGRO)
-        self.dibujarCuadricula()
+        #self.dibujarCuadricula()
         self.cabezas.draw(self.pantalla)
         self.comidas.draw(self.pantalla)
         self.colas.draw(self.pantalla)
@@ -92,20 +99,24 @@ class Comida(pygame.sprite.Sprite):
         self.rect.y = y*CASILLA
 
 class Cola(pygame.sprite.Sprite):
-    def __init__(self,juego,xpre,ypre,anterior):
+    def __init__(self,juego):
         pygame.sprite.Sprite.__init__(self)
         self.juego = juego
         self.image = pygame.Surface([CASILLA,CASILLA])
         self.image.fill(AZUL)
         self.rect = self.image.get_rect()
-        self.rect.x = xpre
-        self.rect.y = ypre
-        self.anterior = anterior
-        self.prepos = []
+        #self.rect.x = xprex
+        #self.rect.y = yprey
+        #self.anterior = anterior
     def update(self):
-        self.prepos = [self.rect.x,self.rect.y]
-        self.rect.x = self.anterior.prepos[0]
-        self.rect.y = self.anterior.prepos[1]
+        pass
+        #self.prex =
+        """
+        self.preposx=self.rect.x
+        self.preposy=self.rect.y
+        self.rect.x = self.anterior.preposx
+        self.rect.y = self.anterior.preposy
+        """
 
 class Cabeza(pygame.sprite.Sprite):
     def __init__(self,juego):
@@ -121,8 +132,8 @@ class Cabeza(pygame.sprite.Sprite):
         self.dir = -1
         self.x = self.rect.x
         self.y = self.rect.y
-        self.prepos = []
-
+        self.preposx = 0
+        self.preposy = 0
     def moverArriba(self):
         if self.dir == 8:
             self.dir = 2
@@ -151,6 +162,12 @@ class Cabeza(pygame.sprite.Sprite):
             self.vel_x+=CASILLA
             self.vel_y = 0
             self.dir = 4
+    def colisionCuerpo(self):
+        for item in self.juego.colas:
+            if pygame.sprite.collide_rect(self,item):
+                print "colision cuerpo"
+                pygame.quit()
+                sys.exit()
     def colisionComida(self):
         for item in self.juego.comidas:
             if pygame.sprite.collide_rect(self,item):
@@ -158,23 +175,29 @@ class Cabeza(pygame.sprite.Sprite):
                 item.kill()
                 del item
                 self.juego.cantidad_comida = 0
-                cola = Cola(self.juego,self.juego.snake[-1].prepos[0],self.juego.snake[-1].prepos[1],self.juego.snake[-1])
-                self.juego.colas.add(cola)
+                cola = Cola(self.juego)
                 self.juego.snake.append(cola)
+                self.juego.colas.add(cola)
     def update(self):
         self.colisionComida()
+        self.juego.posCola()
         if ((self.dir == 6)and(self.rect.x<(ANCHO-CASILLA))):
-            self.prepos = [self.rect.x,self.rect.y]
+            self.preposx = self.rect.x
+            self.preposy = self.rect.y
             self.rect.x += self.vel_x
-        if ((self.dir == 4)and(self.rect.x>0)):
-            self.prepos = [self.rect.x,self.rect.y]
+        elif ((self.dir == 4)and(self.rect.x>0)):
+            self.preposx = self.rect.x
+            self.preposy = self.rect.y
             self.rect.x -= self.vel_x
-        if ((self.dir == 8)and(self.rect.y<ALTO-CASILLA)):
-            self.prepos = [self.rect.x,self.rect.y]
+        elif ((self.dir == 8)and(self.rect.y<ALTO-CASILLA)):
+            self.preposx = self.rect.x
+            self.preposy = self.rect.y
             self.rect.y += self.vel_y
-        if ((self.dir == 2)and(self.rect.y>0)):
-            self.prepos = [self.rect.x,self.rect.y]
+        elif ((self.dir == 2)and(self.rect.y>0)):
+            self.preposx = self.rect.x
+            self.preposy = self.rect.y
             self.rect.y -= self.vel_y
+        self.colisionCuerpo()
         #self.colisionComida()
         if self.dir == 2:
             self.y-=CASILLA
@@ -182,19 +205,19 @@ class Cabeza(pygame.sprite.Sprite):
                 print "colision arriba"
                 pygame.quit()
                 sys.exit()
-        if self.dir == 8:
+        elif self.dir == 8:
             self.y+=CASILLA
             if self.y>=ALTO:
                 print "colision abajo"
                 pygame.quit()
                 sys.exit()
-        if self.dir == 6:
+        elif self.dir == 6:
             self.x+=CASILLA
             if self.x>=ANCHO:
                 print "colision derecha"
                 pygame.quit()
                 sys.exit()
-        if self.dir == 4:
+        elif self.dir == 4:
             self.x-=CASILLA
             if self.x<0:
                 print "colision izquierda"
@@ -215,7 +238,7 @@ if __name__ == "__main__":
         #juego.comidas.draw(juego.pantalla)
         juego.dibujar()
         juego.eventos()
-        reloj.tick(5)
+        reloj.tick(20)
     pygame.quit()
     sys.exit()
     

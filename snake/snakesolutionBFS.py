@@ -1,7 +1,6 @@
 from __future__ import print_function
-import sys
 from simpleai.search import breadth_first, SearchProblem
-from simpleai.search.viewers import WebViewer
+
 
 GOAL = '''x-x-x-x-x-x-x-x-x-x
 x-e-e-e-e-e-e-e-e-x
@@ -122,7 +121,6 @@ class SnakeProblem(SearchProblem):
                 actions.append("LEFT")
             if rows[row_c][col_c+1] == 'e':
                 actions.append("RIGHT")
-        #print(actions)
 
         return actions
 
@@ -133,7 +131,7 @@ class SnakeProblem(SearchProblem):
         '''
         rows = string_to_list(state)
         row_c, col_c = find_location(rows, 'c')
-        #print(row_c,col_c)
+
         if action == "UP":
             rows[row_c][col_c], rows[row_c-1][col_c] = rows[row_c-1][col_c], rows[row_c][col_c]
         if action == "DOWN":
@@ -142,14 +140,7 @@ class SnakeProblem(SearchProblem):
             rows[row_c][col_c], rows[row_c][col_c+1] = rows[row_c][col_c+1], rows[row_c][col_c]
         if action == "LEFT":
             rows[row_c][col_c], rows[row_c][col_c-1] = rows[row_c][col_c-1], rows[row_c][col_c]
-        #if (row_c == 26 and col_c==2):
-            #print(list_to_string(rows))
-            
-        #print (action)
-        #print(rows)
         
-        
-
         return list_to_string(rows)
 
 
@@ -175,14 +166,11 @@ class SnakeProblem(SearchProblem):
         row_c_goal, col_c_goal = goal_positions['c']
 
         distance += abs(row_c - row_c_goal) + abs(col_c - col_c_goal)
-        #print(distance)
-        #sys.exit()
+
         return distance
 
 
 result = breadth_first(SnakeProblem(INITIAL),graph_search=True)
-# if you want to use the visual debugger, use this instead:
-# result = astar(EigthPuzzleProblem(INITIAL), viewer=WebViewer())
 
 for action, state in result.path():
     print('Move ', action)

@@ -1,5 +1,4 @@
 from __future__ import print_function
-import sys
 from simpleai.search import astar, SearchProblem
 
 GOAL = '''x-x-x-x-x-x-x-x-x-x
@@ -89,9 +88,6 @@ goal_positions = {}
 rows_goal = string_to_list(GOAL)
 for food in 'c':
     goal_positions['c'] = find_location(rows_goal, food)
-
-
-
 
 class SnakeProblem(SearchProblem):
     def actions(self, state):
